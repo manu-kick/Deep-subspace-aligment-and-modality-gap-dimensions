@@ -21,8 +21,8 @@ class EmbeddingsDataset(Dataset):
         for fn in os.listdir(precomputed_dir):
             if fn.endswith(".npz") and split_name in fn:
                 data = np.load(os.path.join(precomputed_dir, fn))
-                self.text_embeddings.append(data["text_embeddings"])
-                self.vision_embeddings.append(data["vision_embeddings"])
+                self.vision_embeddings.append(data["vision_emb"])
+                self.text_embeddings.append(data["text_emb"])
         
         # Concatenate all loaded embeddings into single arrays
         self.text_embeddings = np.concatenate(self.text_embeddings, axis=0)  # [N, D]
@@ -32,9 +32,11 @@ class EmbeddingsDataset(Dataset):
         return len(self.text_embeddings)
 
     def __getitem__(self, idx):
-        text_emb = torch.as_tensor(self.text_embeddings[idx]).float()
+        # random_idx = np.random.randint(0, len(self.text_embeddings[idx]))
+        text_emb = torch.as_tensor(self.text_embeddings[idx][0]).float()
         vision_emb = torch.as_tensor(self.vision_embeddings[idx]).float()
         return text_emb, vision_emb
+    
     
 def get_embeddings_dataloaders(precomputed_dir, split_name="flickr30k", batch_size=32, shuffle=True):
     dataset = EmbeddingsDataset(precomputed_dir, split_name)
