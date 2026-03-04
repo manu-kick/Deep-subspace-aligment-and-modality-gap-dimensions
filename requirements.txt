@@ -9,5 +9,6 @@ wandb
 pyyaml
 # librosa
 pandas
+umap-learn
 # plotly
 # kaleido
