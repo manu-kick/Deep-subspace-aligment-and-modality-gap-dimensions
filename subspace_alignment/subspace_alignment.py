@@ -1,9 +1,90 @@
 # Inspired by 'The Surprising Effectiveness of Deep Orthogonal Procrustes Alignment in Unsupervised Domain Adaptation"
+import os
+import sys
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score, homogeneity_score, v_measure_score
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+sys.path.append(os.path.abspath(".."))
+from metrics.retrieval import compute_retrieval
+from analysis.modality_gap import compute_gap
+
+
+def _clustering_metrics_two_modalities(X, Y, labels, n_clusters=10, random_state=0):
+    """
+    KMeans su [X; Y] (2N, D) e metriche vs labels duplicate (2N,).
+    """
+    X_np = X.detach().cpu().numpy() if torch.is_tensor(X) else X
+    Y_np = Y.detach().cpu().numpy() if torch.is_tensor(Y) else Y
+    L_np = labels.detach().cpu().numpy() if torch.is_tensor(labels) else labels
+
+    emb = np.vstack([X_np, Y_np])                       # (2N, D)
+    true2 = np.concatenate([L_np, L_np], axis=0)        # (2N,)
+
+    km = KMeans(n_clusters=n_clusters, random_state=random_state, n_init="auto")
+    pred = km.fit_predict(emb)
+
+    return {
+        "ARI": adjusted_rand_score(true2, pred),
+        "NMI": normalized_mutual_info_score(true2, pred),
+        "Homogeneity": homogeneity_score(true2, pred),
+        "V-measure": v_measure_score(true2, pred),
+        "cluster_labels": pred,
+        "true_labels_2N": true2,
+        "emb_2N": emb
+    }
+
+
+def _plot_pca_2d(emb_2N, labels_2N, title, max_points=6000):
+    """
+    PCA 2D veloce per visualizzare cluster/label (2N punti).
+    Marker:
+      - text: 'x'
+      - vision: 'o'
+    """
+    n2 = emb_2N.shape[0]
+    n = n2 // 2
+    modality = np.concatenate([
+        np.zeros(n, dtype=np.int32),          # text (first N)
+        np.ones(n2 - n, dtype=np.int32)       # vision (second N)
+    ])
+
+    if n2 > max_points:
+        idx = np.random.RandomState(0).choice(n2, size=max_points, replace=False)
+        emb_2N = emb_2N[idx]
+        labels_2N = labels_2N[idx]
+        modality = modality[idx]
+
+    pca = PCA(n_components=2, random_state=0)
+    z = pca.fit_transform(emb_2N)
+
+    plt.figure(figsize=(6, 5))
+
+    # same colormap for labels, different marker for modality
+    sc_vis = plt.scatter(
+        z[modality == 1, 0], z[modality == 1, 1],
+        c=labels_2N[modality == 1], s=20, marker='o', alpha=0.75, label='vision'
+    )
+    plt.scatter(
+        z[modality == 0, 0], z[modality == 0, 1],
+        c=labels_2N[modality == 0], s=20, marker='x', alpha=0.75,
+        cmap=sc_vis.cmap, norm=sc_vis.norm, label='text'
+    )
+
+    plt.title(title)
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.legend(loc="best")
+    plt.colorbar(sc_vis, fraction=0.046, pad=0.04)
+    plt.tight_layout()
+    plt.show()
 
 def collect_embeddings(loader, device):
     """
@@ -50,7 +131,8 @@ def fit_subspace_alignment(loader, d_sub = 256, device="cuda"):
 
     return {"muX": muX, "muY": muY, "Ws": Ws, "Wt": Wt, "Phi": Phi, "d_sub": d_sub}
         
-def apply_subspace_alignment(X, Y, model, device, renorm=True):
+def apply_subspace_alignment(X, Y, model, renorm=True):
+    device = X.device
     eps = 1e-12
     muX, muY = model["muX"], model["muY"]
     Ws, Wt, Phi = model["Ws"], model["Wt"], model["Phi"]
@@ -96,3 +178,120 @@ def analyze_subspace_dimensions(model, device):
     top_imp_joint = np.argsort(imp_joint)[::-1]
     
     return top_impX, top_impY, top_imp_joint
+
+
+def eval_subspace_alignment_cifar10(
+    test_loader,
+    alignment_model,
+    device="cuda",
+    labels_to_emb=None,
+    do_clustering=True,
+    n_clusters=10,
+    max_cluster_samples=5000,
+    plot_pca=True,
+):
+
+    def _to_scalar(v):
+        if isinstance(v, dict):
+            v = v.get("text_vision", next(iter(v.values())))
+        if torch.is_tensor(v):
+            v = v.item()
+        return float(v)
+
+
+    if labels_to_emb is None:
+        raise ValueError("labels_to_emb must be provided for CIFAR-10 retrieval evaluation.")
+    
+    gaps=("RMG","L2M","L2I","cosineTP")
+    r_orig = {1: [], 5: [], 10: []}
+    r_al   = {1: [], 5: [], 10: []}
+    gaps_orig_batches = {g: [] for g in gaps}
+    gaps_al_batches = {g: [] for g in gaps}
+
+    # buffers per clustering
+    X_buf, Y_buf, L_buf = [], [], []
+    Xa_buf, Ya_buf = [], []
+    seen = 0
+
+    with torch.no_grad():
+        for text_b, vis_b, labels_b in tqdm(test_loader, desc="Eval subspace alignment"):
+            X = F.normalize(text_b.to(device), dim=-1)
+            Y = F.normalize(vis_b.to(device),  dim=-1)
+            labels = labels_b.to(device)
+            
+        
+            # original retrieval
+            r_orig[1].append(_to_scalar(compute_retrieval("cifar10", (Y, X, labels), top_k=1, labels_to_emb=labels_to_emb)))
+            r_orig[5].append(_to_scalar(compute_retrieval("cifar10", (Y, X, labels), top_k=5, labels_to_emb=labels_to_emb)))
+            r_orig[10].append(_to_scalar(compute_retrieval("cifar10", (Y, X, labels), top_k=10, labels_to_emb=labels_to_emb)))
+
+            # aligned vision -> text-space
+            Xn, _, Yaln = apply_subspace_alignment(X, Y, alignment_model, renorm=True)
+
+            r_al[1].append(_to_scalar(compute_retrieval("cifar10", (Yaln, Xn, labels), top_k=1, labels_to_emb=labels_to_emb)))
+            r_al[5].append(_to_scalar(compute_retrieval("cifar10", (Yaln, Xn, labels), top_k=5, labels_to_emb=labels_to_emb)))
+            r_al[10].append(_to_scalar(compute_retrieval("cifar10", (Yaln, Xn, labels), top_k=10, labels_to_emb=labels_to_emb)))
+
+            for g in gaps:
+                go = compute_gap(g, X, Y, iterations=None)
+                ga = compute_gap(g, X, Yaln, iterations=None)
+                gaps_orig_batches[g].append(_to_scalar(go))
+                gaps_al_batches[g].append(_to_scalar(ga))
+
+            # --- CLUSTERING BUFFERS ---
+            if do_clustering and seen < max_cluster_samples:
+                b = min(X.shape[0], max_cluster_samples - seen)
+                X_buf.append(X[:b].detach().cpu())
+                Y_buf.append(Y[:b].detach().cpu())
+                Xa_buf.append(Xn[:b].detach().cpu())
+                Ya_buf.append(Yaln[:b].detach().cpu())
+                L_buf.append(labels[:b].detach().cpu())
+                seen += b
+    
+    gaps_orig = {g: float(np.mean(v)) for g, v in gaps_orig_batches.items()}
+    gaps_al = {g: float(np.mean(v)) for g, v in gaps_al_batches.items()}
+    
+    print("\n=== SUBSPACE ALIGNMENT TEST RESULTS ===")
+    print(f"d_sub = {alignment_model['d_sub']}")
+    print(f"Retrieval@1  orig: {np.mean(r_orig[1]):.4f} | aligned: {np.mean(r_al[1]):.4f}")
+    print(f"Retrieval@5  orig: {np.mean(r_orig[5]):.4f} | aligned: {np.mean(r_al[5]):.4f}")
+    print(f"Retrieval@10 orig: {np.mean(r_orig[10]):.4f} | aligned: {np.mean(r_al[10]):.4f}")
+    print("Gaps original:", gaps_orig)
+    print("Gaps aligned :", gaps_al)
+
+    # --- CLUSTERING E VISUALIZZAZIONE ---
+    if do_clustering and len(X_buf) > 0:
+        X_all  = torch.cat(X_buf, dim=0)
+        Y_all  = torch.cat(Y_buf, dim=0)
+        Xa_all = torch.cat(Xa_buf, dim=0)
+        Ya_all = torch.cat(Ya_buf, dim=0)
+        L_all  = torch.cat(L_buf, dim=0)
+
+        print(f"\n[Clustering] using N={X_all.shape[0]} samples (then 2N points for KMeans).")
+
+        m_orig = _clustering_metrics_two_modalities(X_all, Y_all, L_all, n_clusters=n_clusters, random_state=0)
+        m_al   = _clustering_metrics_two_modalities(Xa_all, Ya_all, L_all, n_clusters=n_clusters, random_state=0)
+
+        print(f"[Clustering KMeans k={n_clusters}]")
+        print(f"  ORIG   ARI={m_orig['ARI']:.4f} | NMI={m_orig['NMI']:.4f} | Hom={m_orig['Homogeneity']:.4f} | V={m_orig['V-measure']:.4f}")
+        print(f"  ALIGNED ARI={m_al['ARI']:.4f} | NMI={m_al['NMI']:.4f} | Hom={m_al['Homogeneity']:.4f} | V={m_al['V-measure']:.4f}")
+
+        if plot_pca:
+            _plot_pca_2d(m_orig["emb_2N"], m_orig["true_labels_2N"], title=f"PCA 2D (orig) Subspace d={alignment_model['d_sub']}")
+            _plot_pca_2d(m_al["emb_2N"],   m_al["true_labels_2N"], title=f"PCA 2D (aligned) Subspace d={alignment_model['d_sub']}")
+
+        return {
+            "retrieval_orig": {k: float(np.mean(v)) for k, v in r_orig.items()},
+            "retrieval_aligned": {k: float(np.mean(v)) for k, v in r_al.items()},
+            "gaps_orig": gaps_orig,
+            "gaps_aligned": gaps_al,
+            "clustering_orig": {k: m_orig[k] for k in ["ARI","NMI","Homogeneity","V-measure"]},
+            "clustering_aligned": {k: m_al[k] for k in ["ARI","NMI","Homogeneity","V-measure"]},
+        }
+
+    return {
+        "retrieval_orig": {k: float(np.mean(v)) for k,v in r_orig.items()},
+        "retrieval_aligned": {k: float(np.mean(v)) for k,v in r_al.items()},
+        "gaps_orig": gaps_orig,
+        "gaps_aligned": gaps_al
+    }

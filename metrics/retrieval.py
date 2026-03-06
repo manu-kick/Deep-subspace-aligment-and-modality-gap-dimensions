@@ -28,3 +28,51 @@ def retrieval(text_embeddings, vision_embeddings, top_k=1):
     recall_at_k = correct_matches.float().mean().item()  # scalar
 
     return  recall_at_k
+
+
+def retrieval_cifar10(X, Y, labels, top_k=1, labels_to_emb=None):
+    """
+    Cross-modal Recall@K for CIFAR-10.
+    X: image embeddings (N, D)
+    Y: text embeddings (unused but kept for API consistency)
+    labels: tensor (N,)
+    labels_to_emb: dict {class_id: embedding}
+    """
+
+    # stack label embeddings -> (10, D)
+    text_embs = torch.stack([labels_to_emb[i] for i in sorted(labels_to_emb.keys())]).to(X.device)
+
+    # normalize for cosine similarity
+    X = F.normalize(X, dim=1)
+    text_embs = F.normalize(text_embs, dim=1)
+
+    # similarity (N, 10)
+    sim = X @ text_embs.T # image vs text similarity
+
+    # top-k predicted classes
+    topk = sim.topk(top_k, dim=1).indices
+
+    # check if correct class is in top-k
+    correct = (topk == labels.unsqueeze(1)).any(dim=1).float()
+
+    recall = correct.mean().item()
+
+    return recall
+    
+    
+    
+    
+    
+    
+
+  
+    
+def compute_retrieval(dataset_name, inputs, top_k=1, labels_to_emb=None):
+  if dataset_name == "cifar10":
+    x = inputs[0]
+    y = inputs[1]
+    labels = inputs[2]
+    return retrieval_cifar10(x, y, labels, top_k=top_k, labels_to_emb=labels_to_emb)
+  
+  raise Exception("Ensure correct format of inputs for retrival for other datasets different from cifar10.")
+  

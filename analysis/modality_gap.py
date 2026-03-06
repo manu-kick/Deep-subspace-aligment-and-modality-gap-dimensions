@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import numpy as np
 
 
+
 def L2M(metric, text_embeddings, vision_embeddings, iterations):
     mean_text = text_embeddings.mean(dim=0)
     mean_vision = vision_embeddings.mean(dim=0)
@@ -16,14 +17,21 @@ def L2M(metric, text_embeddings, vision_embeddings, iterations):
 
 # Relative modality gap as in https://openreview.net/pdf?id=uAFHCZRmXk
 def rmg_numerator(mod1, mod2):
+    mod1 = torch.Tensor(mod1) if not isinstance(mod1, torch.Tensor) else mod1
+    mod2 = torch.Tensor(mod2) if not isinstance(mod2, torch.Tensor) else mod2
     return torch.mean(1 - F.cosine_similarity(mod1, mod2)).item()
 
 def rmg_denominator(mod1, mod2, numerator):
+    mod1 = torch.Tensor(mod1) if not isinstance(mod1, torch.Tensor) else mod1
+    mod2 = torch.Tensor(mod2) if not isinstance(mod2, torch.Tensor) else mod2
+    mod1 = mod1.float() if not mod1.dtype == torch.float32 else mod1
+    mod2 = mod2.float() if not mod2.dtype == torch.float32 else mod2
     N = mod1.shape[0]
     factor_multiplier = 1 / ((2 * N) * (N - 1))
+    
 
-    sim_mod1 = F.cosine_similarity(mod1.unsqueeze(1), mod1.unsqueeze(0), dim=-1)
-    sim_mod2 = F.cosine_similarity(mod2.unsqueeze(1), mod2.unsqueeze(0), dim=-1)
+    sim_mod1 = torch.nn.functional.cosine_similarity(mod1.unsqueeze(1), mod1.unsqueeze(0), dim=-1)
+    sim_mod2 = torch.nn.functional.cosine_similarity(mod2.unsqueeze(1), mod2.unsqueeze(0), dim=-1)
 
     dissim_mod1 = (1 - sim_mod1) / 2
     dissim_mod2 = (1 - sim_mod2) / 2
