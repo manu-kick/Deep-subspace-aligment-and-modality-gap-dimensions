@@ -76,6 +76,14 @@ def compute_paired_retrieval_mscoco(inputs, top_k=1):
     hits = (ranks[:, :top_k] == gt).any(dim=1).float()
     return hits.mean().item()
 
+
+def compute_paired_retrieval_mscoco_imagenet_labels(inputs, top_k=1):
+    Q, T = inputs
+    sims = Q @ T.T
+    ranks = torch.argsort(sims, dim=1, descending=True)
+    gt = torch.arange(Q.shape[0], device=Q.device).unsqueeze(1)
+    hits = (ranks[:, :top_k] == gt).any(dim=1).float()
+    return hits.mean().item()
   
     
 def compute_retrieval(dataset_name, inputs, top_k=1, labels_to_emb=None):
@@ -86,6 +94,8 @@ def compute_retrieval(dataset_name, inputs, top_k=1, labels_to_emb=None):
     return retrieval_cifar10(x, y, labels, top_k=top_k, labels_to_emb=labels_to_emb)
   if dataset_name == 'mscoco':
     return compute_paired_retrieval_mscoco(inputs, top_k=top_k)
+  if dataset_name == "mscoco_imagenet_labels":
+    return compute_paired_retrieval_mscoco_imagenet_labels(inputs, top_k=top_k)
   if dataset_name == 'flickr30k':
     return retrieval(inputs[0], inputs[1], top_k=top_k)
   

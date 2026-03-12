@@ -152,3 +152,29 @@ def _clustering_metrics_two_modalities_flickr30k(X, Y, labels, n_clusters=None, 
         "emb_2N": emb,
         "n_clusters": n_clusters,
     }
+
+
+
+# ------------------------------------------------------------
+# ---------------- MSCOCO WITH IMAGENET LABELS ---------------
+# ------------------------------------------------------------
+def clustering_metrics_two_modalities_mscoco_imagenet_labels(X, Y, labels, n_clusters=10, random_state=0):
+    X_np = X.detach().cpu().numpy() if torch.is_tensor(X) else X
+    Y_np = Y.detach().cpu().numpy() if torch.is_tensor(Y) else Y
+    L_np = labels.detach().cpu().numpy() if torch.is_tensor(labels) else labels
+
+    emb = np.vstack([X_np, Y_np])
+    true2 = np.concatenate([L_np, L_np], axis=0)
+
+    km = KMeans(n_clusters=n_clusters, random_state=random_state, n_init="auto")
+    pred = km.fit_predict(emb)
+
+    return {
+        "ARI": adjusted_rand_score(true2, pred),
+        "NMI": normalized_mutual_info_score(true2, pred),
+        "Homogeneity": homogeneity_score(true2, pred),
+        "V-measure": v_measure_score(true2, pred),
+        "cluster_labels": pred,
+        "true_labels_2N": true2,
+        "emb_2N": emb,
+    }
