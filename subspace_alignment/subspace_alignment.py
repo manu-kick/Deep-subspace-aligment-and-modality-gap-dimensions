@@ -90,7 +90,7 @@ def _plot_pca_2d(emb_2N, labels_2N, title, max_points=6000):
     plt.tight_layout()
     plt.show()
 
-def collect_embeddings(loader, max_samples=10_000, device="cuda"):
+def collect_embeddings(loader, max_samples=10_000, device="cuda", no_labels=False):
     """
     Collects (text, vision) pairs from loader into torch tensors.
     Each batch is (text_emb, vision_emb).
@@ -99,20 +99,29 @@ def collect_embeddings(loader, max_samples=10_000, device="cuda"):
     n_samples = 0
     
     with torch.no_grad():
-        for text_b, vis_b, _ in tqdm(loader, desc=f"Collecting samples"):
-            text_b = F.normalize(text_b.to(device), dim=-1)
-            vis_b  = F.normalize(vis_b.to(device), dim=-1)
-            Xs.append(text_b); Ys.append(vis_b)
-            n_samples += text_b.shape[0]
-            if n_samples >= max_samples:
-                break
+        if no_labels:
+            for text_b, vis_b in tqdm(loader, desc=f"Collecting samples"):
+                text_b = F.normalize(text_b.to(device), dim=-1)
+                vis_b  = F.normalize(vis_b.to(device), dim=-1)
+                Xs.append(text_b); Ys.append(vis_b)
+                n_samples += text_b.shape[0]
+                if n_samples >= max_samples:
+                    break
+        else:
+            for text_b, vis_b, _ in tqdm(loader, desc=f"Collecting samples"):
+                text_b = F.normalize(text_b.to(device), dim=-1)
+                vis_b  = F.normalize(vis_b.to(device), dim=-1)
+                Xs.append(text_b); Ys.append(vis_b)
+                n_samples += text_b.shape[0]
+                if n_samples >= max_samples:
+                    break
     X = torch.cat(Xs, dim=0)[:max_samples]
     Y = torch.cat(Ys, dim=0)[:max_samples]
     return X, Y
 
-def fit_subspace_alignment(loader, n_fit=10_000, d_sub = 256, direction ="text_to_vision", device="cuda"):
+def fit_subspace_alignment(loader, n_fit=10_000, d_sub = 256, direction ="text_to_vision", device="cuda", no_labels = False):
     # 1. Collect embeddings
-    X, Y = collect_embeddings(loader, max_samples=n_fit, device=device)
+    X, Y = collect_embeddings(loader, max_samples=n_fit, device=device, no_labels=no_labels)
     if direction == "text_to_vision":
         X, Y = X, Y
     elif direction == "vision_to_text":

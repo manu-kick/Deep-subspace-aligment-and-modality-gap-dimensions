@@ -178,3 +178,57 @@ def clustering_metrics_two_modalities_mscoco_imagenet_labels(X, Y, labels, n_clu
         "true_labels_2N": true2,
         "emb_2N": emb,
     }
+
+
+
+
+
+
+# ---------------------------------------
+# ---------------- MSRVTT ---------------
+# ---------------------------------------
+def clustering_metrics_two_modalities_msrvtt(
+    feat_t,
+    feat_v,
+    labels,
+    n_clusters=20,
+    random_state=0,
+):
+    """
+    KMeans on stacked MSRVTT text/video embeddings and clustering metrics
+    against duplicated semantic class labels (20-way MSRVTT categories).
+    """
+    assert feat_t.shape == feat_v.shape, "text and vision must have the same shape (N, D)"
+
+    if torch.is_tensor(labels):
+        y = labels.detach().cpu().numpy().reshape(-1)
+    else:
+        y = np.asarray(labels).reshape(-1)
+
+    valid = y >= 0
+    feat_t = feat_t[valid]
+    feat_v = feat_v[valid]
+    y = y[valid].astype(np.int64)
+
+    emb = torch.vstack([feat_t, feat_v]).cpu().numpy()
+    true2 = np.concatenate([y, y], axis=0)
+
+    n_unique = int(len(np.unique(y)))
+    if n_clusters is None:
+        n_clusters = n_unique
+    n_clusters = int(max(2, min(n_clusters, n_unique, emb.shape[0])))
+
+    km = KMeans(n_clusters=n_clusters, random_state=random_state, n_init="auto")
+    pred = km.fit_predict(emb)
+
+    return {
+        "ARI": adjusted_rand_score(true2, pred),
+        "NMI": normalized_mutual_info_score(true2, pred),
+        "Homogeneity": homogeneity_score(true2, pred),
+        "V-measure": v_measure_score(true2, pred),
+        "cluster_labels": pred,
+        "true_labels_2N": true2,
+        "emb_2N": emb,
+        "n_clusters": n_clusters,
+        "n_classes": n_unique,
+    }

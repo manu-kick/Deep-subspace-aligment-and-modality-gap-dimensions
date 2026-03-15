@@ -60,10 +60,6 @@ def retrieval_cifar10(X, Y, labels, top_k=1, labels_to_emb=None):
 
     return recall
     
-    
-    
-    
-    
 def compute_paired_retrieval_mscoco(inputs, top_k=1):
     """
     inputs = (queries, targets)
@@ -98,4 +94,5 @@ def compute_retrieval(dataset_name, inputs, top_k=1, labels_to_emb=None):
     return compute_paired_retrieval_mscoco_imagenet_labels(inputs, top_k=top_k)
   if dataset_name == 'flickr30k':
     return retrieval(inputs[0], inputs[1], top_k=top_k)
-  
+  if dataset_name == 'msrvtt':
+    return retrieval(inputs[0], inputs[1], top_k=top_k)
