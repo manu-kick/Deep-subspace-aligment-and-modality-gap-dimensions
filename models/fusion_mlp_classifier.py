@@ -45,16 +45,22 @@ class LinearProbingIndependentModalities(nn.Module):
 class NonLinearProbingIndependentModalities(nn.Module):
     def __init__(self, d=512, num_classes=1000, hidden=1024, dropout=0.2):
         super().__init__()
+        # self.net = nn.Sequential(
+        #     nn.Linear(d, hidden),
+        #     nn.GELU(),
+        #     nn.LayerNorm(hidden),
+        #     nn.Dropout(dropout),
+        #     nn.Linear(hidden, hidden // 2),
+        #     nn.GELU(),
+        #     nn.LayerNorm(hidden // 2),
+        #     nn.Dropout(dropout),
+        #     nn.Linear(hidden // 2, num_classes),
+        # )
         self.net = nn.Sequential(
             nn.Linear(d, hidden),
-            nn.GELU(),
-            nn.LayerNorm(hidden),
+            nn.ReLU(),
             nn.Dropout(dropout),
-            nn.Linear(hidden, hidden // 2),
-            nn.GELU(),
-            nn.LayerNorm(hidden // 2),
-            nn.Dropout(dropout),
-            nn.Linear(hidden // 2, num_classes),
+            nn.Linear(hidden, num_classes),
         )
 
     def forward(self, embedding):
