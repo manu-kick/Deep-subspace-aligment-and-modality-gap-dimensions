@@ -8,7 +8,10 @@ We want a method that we can apply to the pretrained encoder that allows us to g
 
 TODO:
 - check that the cosine dissimilarity d in the RMG computation is actually scaled in 0,1 like the two effects one trigger
-- 
+- vit-b-16 comparison with i0t, grclip, embedding shift
+- vit-bigG-14 method verification
+- vit-bigG-14 few dims
+- vit-bigG-14 comparison with realign, i0t, grclip, embedding shift
 
 HOW TO START:
 1) Precompute MSCOCO embeddings using the model you wish. Move in the correct dataset directory and run the following command for each split (train, val):
