@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-B-16___laion2b_s34b_b88k",
+  "clip_model": "ViT-B-16",
+  "clip_pretrained": "laion2b_s34b_b88k",
+  "d_sub": 32,
+  "embedding_dim": 512,
+  "sample_filename": "000000001098.jpg",
+  "image_id": 1098,
+  "resolved_split": "train2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/train2017/000000001098.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_train2017.json",
+  "captions": [
+    "A woman kneeling down to pet a black and white cow laying on the ground.",
+    "a woman kneeling next to a cow laying on the ground",
+    "a person kneeling down petting a small cow",
+    "A woman is petting a cow at a petting zoo. ",
+    "A young woman petting a cow thats laying down."
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    230,
+    421,
+    160,
+    348,
+    150
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.8615530729293823,
+    0.4288294017314911,
+    0.4067351818084717,
+    0.37503278255462646
+  ],
+  "top_importance_dims": [
+    283,
+    297,
+    421,
+    427,
+    23
+  ],
+  "top_importance_scores": [
+    0.999999999997832,
+    0.7744030290025123,
+    0.7134016659389666,
+    0.7083191774488115,
+    0.6726659019093164
+  ],
+  "n_patch_tokens": 196,
+  "patch_grid_size": 14,
+  "spatial_token_dim": 768,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/32/train2017_000000001098",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/32/train2017_000000001098/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/32/train2017_000000001098/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/32/train2017_000000001098/metadata.json"
+}

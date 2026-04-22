@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-B-32___laion2b_s34b_b79k",
+  "clip_model": "ViT-B-32",
+  "clip_pretrained": "laion2b_s34b_b79k",
+  "d_sub": 256,
+  "embedding_dim": 512,
+  "sample_filename": "000000022892.jpg",
+  "image_id": 22892,
+  "resolved_split": "val2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/val2017/000000022892.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_val2017.json",
+  "captions": [
+    "A cats sits on the table with a dog outside.",
+    "A dog and a cat are watching the plants on the table..",
+    "A dog looks through a window at a cat sitting on a table. ",
+    "A cat sitting on a table next to plants and a dog outside of a sliding glass door, looking in.",
+    "Dog looking in a window at a cat next to plants."
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    307,
+    152,
+    70,
+    253,
+    385
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.9992181062698364,
+    0.9474455118179321,
+    0.9470812678337097,
+    0.7105327248573303
+  ],
+  "top_importance_dims": [
+    270,
+    431,
+    107,
+    110,
+    311
+  ],
+  "top_importance_scores": [
+    0.9999999999981874,
+    0.9625477052507279,
+    0.9422600507587524,
+    0.9389679592302518,
+    0.9357769899671318
+  ],
+  "n_patch_tokens": 49,
+  "patch_grid_size": 7,
+  "spatial_token_dim": 768,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/val2017_000000022892",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/val2017_000000022892/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/val2017_000000022892/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/val2017_000000022892/metadata.json"
+}

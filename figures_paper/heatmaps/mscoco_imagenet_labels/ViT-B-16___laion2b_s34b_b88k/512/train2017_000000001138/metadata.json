@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-B-16___laion2b_s34b_b88k",
+  "clip_model": "ViT-B-16",
+  "clip_pretrained": "laion2b_s34b_b88k",
+  "d_sub": 512,
+  "embedding_dim": 512,
+  "sample_filename": "000000001138.jpg",
+  "image_id": 1138,
+  "resolved_split": "train2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/train2017/000000001138.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_train2017.json",
+  "captions": [
+    "A living room has a couch, chair, fireplace, windows, and a potted plant.",
+    "a living room with some lights on during the day ",
+    "A living room that has a fireplace that is burning wood.",
+    "a room showing living room and fire in it",
+    "A living room has a glowing brick fireplace."
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    230,
+    421,
+    160,
+    348,
+    150
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.8615530729293823,
+    0.4288294017314911,
+    0.4067351818084717,
+    0.37503278255462646
+  ],
+  "top_importance_dims": [
+    448,
+    479,
+    98,
+    445,
+    353
+  ],
+  "top_importance_scores": [
+    0.9999992373998543,
+    0.8181811942362444,
+    0.8181811942362444,
+    0.8181811942362444,
+    0.8181811942362444
+  ],
+  "n_patch_tokens": 196,
+  "patch_grid_size": 14,
+  "spatial_token_dim": 768,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/512/train2017_000000001138",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/512/train2017_000000001138/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/512/train2017_000000001138/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/512/train2017_000000001138/metadata.json"
+}

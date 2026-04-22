@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-B-32___laion2b_s34b_b79k",
+  "clip_model": "ViT-B-32",
+  "clip_pretrained": "laion2b_s34b_b79k",
+  "d_sub": 256,
+  "embedding_dim": 512,
+  "sample_filename": "000000000394.jpg",
+  "image_id": 394,
+  "resolved_split": "train2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/train2017/000000000394.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_train2017.json",
+  "captions": [
+    "A white dog holding a purple frisbee in it's mouth.",
+    "A white dog is holding a frisbee in its mouth waiting to play.",
+    "White dog carrying a purple frisbee on a lawn.",
+    "A white dog has a purple Frisbee in it's mouth.",
+    "a dog is holding a frisbee standing on grass"
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    307,
+    152,
+    70,
+    253,
+    385
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.9992181062698364,
+    0.9474455118179321,
+    0.9470812678337097,
+    0.7105327248573303
+  ],
+  "top_importance_dims": [
+    270,
+    431,
+    107,
+    110,
+    311
+  ],
+  "top_importance_scores": [
+    0.9999999999981874,
+    0.9625477052507279,
+    0.9422600507587524,
+    0.9389679592302518,
+    0.9357769899671318
+  ],
+  "n_patch_tokens": 49,
+  "patch_grid_size": 7,
+  "spatial_token_dim": 768,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/train2017_000000000394",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/train2017_000000000394/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/train2017_000000000394/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-32___laion2b_s34b_b79k/256/train2017_000000000394/metadata.json"
+}

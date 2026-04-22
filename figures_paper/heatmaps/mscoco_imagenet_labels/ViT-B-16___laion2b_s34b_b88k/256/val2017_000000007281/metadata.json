@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-B-16___laion2b_s34b_b88k",
+  "clip_model": "ViT-B-16",
+  "clip_pretrained": "laion2b_s34b_b88k",
+  "d_sub": 256,
+  "embedding_dim": 512,
+  "sample_filename": "000000007281.jpg",
+  "image_id": 7281,
+  "resolved_split": "val2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/val2017/000000007281.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_val2017.json",
+  "captions": [
+    "Two men smile as they ride horses on the beach.",
+    "two guys horseback riding and playing on the beach.",
+    "Two men are riding horses along the beach.",
+    "Two people on horseback are posing while the horses gallop on a beach shore.",
+    "Two people on horses on a beach readying for a picture"
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    230,
+    421,
+    160,
+    348,
+    150
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.8615530729293823,
+    0.4288294017314911,
+    0.4067351818084717,
+    0.37503278255462646
+  ],
+  "top_importance_dims": [
+    283,
+    181,
+    8,
+    287,
+    3
+  ],
+  "top_importance_scores": [
+    0.9999999999986475,
+    0.9225293730766299,
+    0.90535067146302,
+    0.8961464712118002,
+    0.8822919228485432
+  ],
+  "n_patch_tokens": 196,
+  "patch_grid_size": 14,
+  "spatial_token_dim": 768,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/256/val2017_000000007281",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/256/val2017_000000007281/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/256/val2017_000000007281/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-B-16___laion2b_s34b_b88k/256/val2017_000000007281/metadata.json"
+}

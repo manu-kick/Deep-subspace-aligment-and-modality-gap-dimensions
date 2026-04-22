@@ -1,0 +1,56 @@
+{
+  "dataset": "mscoco_imagenet_labels",
+  "model_name": "ViT-bigG-14___laion2b_s39b_b160k",
+  "clip_model": "ViT-bigG-14",
+  "clip_pretrained": "laion2b_s39b_b160k",
+  "d_sub": 1024,
+  "embedding_dim": 1280,
+  "sample_filename": "000000000394.jpg",
+  "image_id": 394,
+  "resolved_split": "train2017",
+  "image_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/train2017/000000000394.jpg",
+  "captions_path": "/mnt/media/emanuele/few_dimensions/dataset/mscoco/data/mscoco/annotations/captions_train2017.json",
+  "captions": [
+    "A white dog holding a purple frisbee in it's mouth.",
+    "A white dog is holding a frisbee in its mouth waiting to play.",
+    "White dog carrying a purple frisbee on a lawn.",
+    "A white dog has a purple Frisbee in it's mouth.",
+    "a dog is holding a frisbee standing on grass"
+  ],
+  "first_K": 5,
+  "top_gap_dims": [
+    1138,
+    1262,
+    342,
+    1218,
+    633
+  ],
+  "top_gap_scores": [
+    1.0,
+    0.9828088283538818,
+    0.9608491659164429,
+    0.9410258531570435,
+    0.937646210193634
+  ],
+  "top_importance_dims": [
+    1248,
+    234,
+    806,
+    1129,
+    85
+  ],
+  "top_importance_scores": [
+    0.9999999999987275,
+    0.9980870880096716,
+    0.9948821640134159,
+    0.9806911179585229,
+    0.9798067185218698
+  ],
+  "n_patch_tokens": 256,
+  "patch_grid_size": 16,
+  "spatial_token_dim": 1664,
+  "export_dir": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-bigG-14___laion2b_s39b_b160k/1024/train2017_000000000394",
+  "two_row_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-bigG-14___laion2b_s39b_b160k/1024/train2017_000000000394/two_row.png",
+  "aggregate_figure": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-bigG-14___laion2b_s39b_b160k/1024/train2017_000000000394/aggregate_average.png",
+  "metadata_json": "/mnt/media/emanuele/few_dimensions/figures_paper/heatmaps/mscoco_imagenet_labels/ViT-bigG-14___laion2b_s39b_b160k/1024/train2017_000000000394/metadata.json"
+}
